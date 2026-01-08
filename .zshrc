@@ -1,10 +1,6 @@
-# main zsh settings. env in ~/.zprofile
-# read second
-
-
 # source global shell alias & variables files
 [ -f "$XDG_CONFIG_HOME/shell/alias" ] && source "$XDG_CONFIG_HOME/shell/alias"
-[ -f "$XDG_CONFIG_HOME/shell/vars" ] && source "$XDG_CONFIG_HOME/shell/vars"
+[ -f "$XDG_CONFIG_HOME/shell/vars" ]  && source "$XDG_CONFIG_HOME/shell/vars"
 
 # load modules
 zmodload zsh/complist
@@ -12,71 +8,91 @@ autoload -U compinit && compinit
 autoload -U colors && colors
 # autoload -U tetris # main attraction of zsh, obviously
 
-
-# cmp opts
-zstyle ':completion:*' menu select # tab opens cmp menu
-zstyle ':completion:*' special-dirs true # force . and .. to show in cmp menu
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33 # colorize cmp menu
-# zstyle ':completion:*' file-list true # more detailed list
-zstyle ':completion:*' squeeze-slashes false # explicit disable to allow /*/ expansion
+# completion styles
+zstyle ':completion:*' menu select                       # tab opens cmp menu
+zstyle ':completion:*' special-dirs true                 # force . and .. to show
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33 # colorize menu
+zstyle ':completion:*' squeeze-slashes false             # allow /*/ expansion
+# zstyle ':completion:*' file-list true                  # more detailed list
 
 # main opts
-setopt append_history inc_append_history share_history # better history
-# on exit, history appends rather than overwrites; history is appended as soon as cmds executed; history shared across sessions
-setopt auto_menu menu_complete # autocmp first menu match
-setopt autocd # type a dir to cd
-setopt auto_param_slash # when a dir is completed, add a / instead of a trailing space
-setopt no_case_glob no_case_match # make cmp case insensitive
-setopt globdots # include dotfiles
-setopt extended_glob # match ~ # ^
-setopt interactive_comments # allow comments in shell
-unsetopt prompt_sp # don't autoclean blanklines
-stty stop undef # disable accidental ctrl s
+setopt append_history inc_append_history share_history   # better history
+setopt auto_menu menu_complete                           # autocmp first menu match
+setopt autocd                                            # type a dir to cd
+setopt auto_param_slash                                  # add / after dir completion
+setopt no_case_glob no_case_match                        # case-insensitive cmp
+setopt globdots                                          # include dotfiles
+setopt extended_glob                                     # ~ ^ # patterns
+setopt interactive_comments                              # allow comments
+unsetopt prompt_sp                                       # don't autoclean blanklines
+stty stop undef                                          # disable accidental ctrl-s
 
 # history opts
 HISTSIZE=1000000
 SAVEHIST=1000000
-HISTFILE="$XDG_CACHE_HOME/zsh_history" # move histfile to cache
-HISTCONTROL=ignoreboth # consecutive duplicates & commands starting with space are not saved
+HISTFILE="$XDG_CACHE_HOME/zsh_history"
+HISTCONTROL=ignoreboth  # (bash-style; harmless in zsh, options above do the real work)
 
-
-# fzf setup
-source <(fzf --zsh) # allow for fzf history widget
-
+# --- fzf setup (fix: remove invalid `--zsh`, source key-bindings properly) ---
+# Prefer system fzf paths on Ubuntu; fallback to ~/.fzf if present.
+if [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
+  source /usr/share/doc/fzf/examples/key-bindings.zsh
+  [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
+elif [ -f /usr/share/fzf/key-bindings.zsh ]; then
+  source /usr/share/fzf/key-bindings.zsh
+  [ -f /usr/share/fzf/completion.zsh ] && source /usr/share/fzf/completion.zsh
+elif [ -f "${HOME}/.fzf/shell/key-bindings.zsh" ]; then
+  source "${HOME}/.fzf/shell/key-bindings.zsh"
+  [ -f "${HOME}/.fzf/shell/completion.zsh" ] && source "${HOME}/.fzf/shell/completion.zsh"
+fi
+# (No `source <(fzf --zsh)` — that flag doesn't exist.)
 
 # binds
 bindkey "^a" beginning-of-line
 bindkey "^e" end-of-line
 bindkey "^k" kill-line
 bindkey "^j" backward-word
-bindkey "^k" forward-word
+bindkey "^f" forward-word         # fix: avoid overriding kill-line on ^k
 bindkey "^H" backward-kill-word
 # ctrl J & K for going up and down in prev commands
 bindkey "^J" history-search-forward
 bindkey "^K" history-search-backward
-bindkey '^R' fzf-history-widget
+bindkey '^R' fzf-history-widget   # safe now (widget defined by fzf key-bindings)
 
-
-# open fff file manager with ctrl f
-# openfff() {
-#  fff <$TTY
-#  zle redisplay
-#}
-#zle -N openfff
-#bindkey '^f' openfff
-
-
-# autosuggestions
-# requires zsh-autosuggestions
-# source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-# syntax highlighting
+source "$HOME/.aliases"
+# syntax highlighting (must be LAST)
 # requires zsh-syntax-highlighting package
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Disable bold text in syntax highlighting
+for key in ${(k)ZSH_HIGHLIGHT_STYLES}; do
+  ZSH_HIGHLIGHT_STYLES[$key]=${ZSH_HIGHLIGHT_STYLES[$key]//,bold/}
+  ZSH_HIGHLIGHT_STYLES[$key]=${ZSH_HIGHLIGHT_STYLES[$key]//bold,/}
+  ZSH_HIGHLIGHT_STYLES[$key]=${ZSH_HIGHLIGHT_STYLES[$key]//bold/}
+done
 
 # aliases
 alias ls='exa -l -h --icons --git'
 alias lsa='exa -la -h --icons --git'
 alias vim='nvim'
+
+# open with tmux :)
+# if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
+#     tmux attach -t default || tmux new -s default
+# fi
+
 # initialize starship
 eval "$(starship init zsh)"
+
+# Editor
+export EDITOR=nvim
+export VISUAL=nvim
+export TERM=xterm-256color
+
+alias kconf='nvim ~/.config/kitty/kitty.conf'
+alias zconf='nvim ~/.zshrc'
+alias vimclr='nvim ~/.config/nvim/lua/plugins/colorscheme.lua'
+# zellij 
+if [[ -z "$ZELLIJ" && -t 1 ]]; then
+  exec zellij
+fi
