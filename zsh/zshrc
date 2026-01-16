@@ -62,7 +62,7 @@ bindkey '^R' fzf-history-widget   # safe now (widget defined by fzf key-bindings
 source "$HOME/.aliases"
 # syntax highlighting (must be LAST)
 # requires zsh-syntax-highlighting package
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Disable bold text in syntax highlighting
 for key in ${(k)ZSH_HIGHLIGHT_STYLES}; do
@@ -82,7 +82,10 @@ alias vim='nvim'
 # fi
 
 # initialize starship
-eval "$(starship init zsh)"
+# eval "$(starship init zsh)"
+
+# init oh-my-posh
+eval "$(oh-my-posh init zsh --config json)"
 
 # Editor
 export EDITOR=nvim
@@ -91,3 +94,9 @@ export TERM=xterm-256color
 
 alias kconf='nvim ~/.config/kitty/kitty.conf'
 alias zconf='nvim ~/.zshrc'
+alias vimclr='nvim ~/.config/nvim/lua/plugins/colorscheme.lua'
+
+# zellij 
+if [[ -z "$ZELLIJ" && -t 1 ]]; then
+  exec zellij
+fi
