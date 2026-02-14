@@ -59,10 +59,11 @@ bindkey "^J" history-search-forward
 bindkey "^K" history-search-backward
 bindkey '^R' fzf-history-widget   # safe now (widget defined by fzf key-bindings)
 
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 source "$HOME/.aliases"
 # syntax highlighting (must be LAST)
 # requires zsh-syntax-highlighting package
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+#source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Disable bold text in syntax highlighting
 for key in ${(k)ZSH_HIGHLIGHT_STYLES}; do
@@ -72,18 +73,12 @@ for key in ${(k)ZSH_HIGHLIGHT_STYLES}; do
 done
 
 # aliases
-alias ls='exa -l -h --icons --git'
-alias lsa='exa -la -h --icons --git'
+alias ls='eza -l -h --icons --git'
+alias lsa='eza -la -h --icons --git'
 alias vim='nvim'
 
-# open with tmux :)
-# if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
-#     tmux attach -t default || tmux new -s default
-# fi
-
-# initialize starship
-eval "$(starship init zsh)"
-
+eval "$(oh-my-posh init zsh --config json)"
+# eval "$(starship init zsh)"
 # Editor
 export EDITOR=nvim
 export VISUAL=nvim
@@ -92,7 +87,8 @@ export TERM=xterm-256color
 alias kconf='nvim ~/.config/kitty/kitty.conf'
 alias zconf='nvim ~/.zshrc'
 alias vimclr='nvim ~/.config/nvim/lua/plugins/colorscheme.lua'
+
 # zellij 
-if [[ -z "$ZELLIJ" && -t 1 ]]; then
-  exec zellij
-fi
+#if [[ -z "$ZELLIJ" && -t 1 ]]; then
+#  exec zellij
+#fi
