@@ -1,0 +1,55 @@
+# Moonfly Zathura theme
+set font "GeistMono NF Medium 10.5"
+set default-bg "#080808"
+set default-fg "#bdbdbd"
+
+# Status bar
+set statusbar-bg "#323437"
+set statusbar-fg "#bdbdbd"
+
+# Command bar
+set inputbar-bg "#080808"
+set inputbar-fg "#36c692"
+
+# Notification colors
+set notification-bg "#323437"
+set notification-fg "#e4e4e4"
+
+set notification-error-bg "#ff5d5d"
+set notification-error-fg "#080808"
+
+set notification-warning-bg "#e3c78a"
+set notification-warning-fg "#080808"
+
+# Highlighting
+set highlight-color "#80a0ff"
+set highlight-active-color "#ae81ff"
+
+# Search matches
+set recolor true
+set recolor-lightcolor "#080808"
+set recolor-darkcolor "#e6e6e6"
+set recolor-keephue false
+set page-padding 8
+set adjust-open "best-fit"
+
+# Selection
+set highlight-transparency 0.2
+
+# Index (table of contents)
+set index-bg "#080808"
+set index-fg "#bdbdbd"
+set index-active-bg "#323437"
+set index-active-fg "#ae81ff"
+
+# Completion menu
+set completion-bg "#323437"
+set completion-fg "#bdbdbd"
+set completion-highlight-bg "#80a0ff"
+set completion-highlight-fg "#080808"
+
+# UI behavior
+set guioptions ""
+set scroll-step 50
+set page-padding 6
+set window-title-basename true
